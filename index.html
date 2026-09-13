@@ -657,23 +657,41 @@
       if (refreshIcon) refreshIcon.classList.add('fa-spin');
 
       try {
-        const url = `https://api.github.com/repos/${REPO_PAGES}/contents/auth.json?_t=${Date.now()}`;
-        const res = await fetch(url, {
-          headers: {
-            'Authorization': `token ${GITHUB_TOKEN}`,
-            'Accept': 'application/vnd.github.v3+json'
+        let loaded = false;
+        // 1. 优先从专属极速网关直读 (0秒延迟实时数据库)
+        try {
+          const resFast = await fetch(`https://api.123771.xyz/api/plove/auth?_t=${Date.now()}`, { cache: 'no-store' });
+          if (resFast.ok) {
+            const dataFast = await resFast.json();
+            if (dataFast && (dataFast.whitelist !== undefined || dataFast.maintenance !== undefined)) {
+              currentConfig = dataFast;
+              loaded = true;
+            }
           }
-        });
-        if (!res.ok) throw new Error('网络请求异常: ' + res.status);
-        const data = await res.json();
-        currentShaPages = data.sha;
-        
-        // base64 decode with UTF-8
-        const decodedStr = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
-        currentConfig = JSON.parse(decodedStr);
+        } catch (eFast) {
+          console.warn('极速网关直读跳过:', eFast);
+        }
+
+        // 2. 备用从 GitHub API 读取
+        if (!loaded) {
+          const url = `https://api.github.com/repos/${REPO_PAGES}/contents/auth.json?_t=${Date.now()}`;
+          const res = await fetch(url, {
+            headers: {
+              'Authorization': `token ${GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            currentShaPages = data.sha;
+            const decodedStr = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+            currentConfig = JSON.parse(decodedStr);
+            loaded = true;
+          }
+        }
 
         renderUI();
-        if (isManualRefresh) showToast('已从云端拉取最新配置');
+        if (isManualRefresh) showToast('已从极速实时网关读取最新配置');
       } catch (e) {
         console.error(e);
         showToast('加载失败: ' + e.message, true);
@@ -834,6 +852,17 @@
       try {
         const jsonStr = JSON.stringify(currentConfig, null, 2);
         const contentB64 = btoa(unescape(encodeURIComponent(jsonStr)));
+
+        // 0. 优先秒级同步至专属极速实时网关 (0.1秒内即时全网生效！)
+        try {
+          await fetch('https://api.123771.xyz/api/plove/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: jsonStr
+          });
+        } catch (eGateway) {
+          console.warn('极速网关即时写入:', eGateway);
+        }
 
         // 1. 同步保存到 Ploveooo.github.io
         let shaPages = currentShaPages;
