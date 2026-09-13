@@ -3,162 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Plove 远程授权与系统维护控制台</title>
+  <title>Plove 远程授权与维护管理后台</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --bg-color: #0b0f19;
-      --card-bg: rgba(23, 30, 48, 0.75);
-      --card-border: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(23, 30, 48, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
       --accent-blue: #3b82f6;
-      --accent-blue-hover: #2563eb;
+      --accent-purple: #8b5cf6;
       --accent-green: #10b981;
       --accent-red: #ef4444;
-      --accent-orange: #f59e0b;
+      --accent-amber: #f59e0b;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
     }
 
     body {
-      background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0b0f19 75%);
+      background-color: var(--bg-color);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px;
+      padding: 20px 16px 80px;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 40%);
     }
 
     .container {
       width: 100%;
-      max-width: 680px;
+      max-width: 640px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
     }
 
     /* Header */
     .header {
-      text-align: center;
-      padding: 16px 0 8px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 6px;
     }
-    .header h1 {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #60a5fa, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      font-size: 22px;
+      color: white;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
     }
-    .header p {
-      font-size: 13px;
+    .header-title h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .header-title p {
+      font-size: 12px;
       color: var(--text-muted);
-      margin-top: 6px;
+    }
+    .header-refresh {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .header-refresh:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.15);
     }
 
     /* Glass Card */
     .card {
       background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
       border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      padding: 18px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
     }
-
     .card-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
-      color: #e2e8f0;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 14px;
     }
 
-    /* Live Status Banner */
-    .status-banner {
+    /* Overview Status */
+    .status-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
     }
     .status-item {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 12px;
-      padding: 12px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      padding: 12px 10px;
+      text-align: center;
     }
     .status-label {
       font-size: 11px;
       color: var(--text-muted);
+      margin-bottom: 4px;
     }
     .status-value {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
-    .badge-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
+    .badge-green { color: var(--accent-green); }
+    .badge-red { color: var(--accent-red); }
+    .badge-amber { color: var(--accent-amber); }
+    .badge-blue { color: var(--accent-blue); }
 
-    /* Switch Rows */
+    /* Switch Control */
     .switch-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 8px 0;
     }
-    .switch-row:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-    .switch-row:first-child {
-      padding-top: 0;
-    }
-    .switch-info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .switch-title {
-      font-size: 14px;
+    .switch-desc h4 {
+      font-size: 15px;
       font-weight: 600;
     }
-    .switch-desc {
+    .switch-desc p {
       font-size: 12px;
       color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.4;
     }
-
-    /* Toggle Switch */
-    .switch {
+    .toggle {
       position: relative;
       display: inline-block;
-      width: 48px;
-      height: 28px;
+      width: 52px;
+      height: 30px;
       flex-shrink: 0;
     }
-    .switch input {
+    .toggle input {
       opacity: 0;
       width: 0;
       height: 0;
@@ -167,76 +181,70 @@
       position: absolute;
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #334155;
-      transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 28px;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 30px;
     }
     .slider:before {
       position: absolute;
       content: "";
-      height: 22px;
-      width: 22px;
+      height: 24px;
+      width: 24px;
       left: 3px;
       bottom: 3px;
       background-color: white;
-      transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
     input:checked + .slider {
       background-color: var(--accent-blue);
     }
-    input:checked + .slider.orange-slider {
-      background-color: var(--accent-orange);
-    }
     input:checked + .slider:before {
-      transform: translateX(20px);
+      transform: translateX(22px);
+    }
+    input.warn:checked + .slider {
+      background-color: var(--accent-red);
     }
 
-    /* Input & Add Button */
+    /* Input & Buttons */
     .input-group {
       display: flex;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-top: 10px;
     }
     .text-input {
       flex: 1;
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 12px 14px;
-      color: #fff;
+      color: var(--text-main);
       font-size: 14px;
       font-family: monospace;
       outline: none;
-      transition: border-color .2s;
+      transition: border-color 0.2s;
     }
     .text-input:focus {
       border-color: var(--accent-blue);
     }
-    .btn {
+    .btn-action {
       background: var(--accent-blue);
       color: white;
       border: none;
       border-radius: 12px;
       padding: 0 16px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all .2s;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
-    .btn:hover {
-      background: var(--accent-blue-hover);
-    }
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.08);
-      color: #e2e8f0;
-    }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.14);
+    .btn-action:active {
+      transform: scale(0.96);
     }
 
     /* Device List */
@@ -244,64 +252,94 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-height: 240px;
+      margin-top: 14px;
+      max-height: 320px;
       overflow-y: auto;
       padding-right: 4px;
     }
     .device-item {
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      padding: 10px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 10px 14px;
+    }
+    .device-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .device-icon {
+      color: var(--accent-blue);
+      font-size: 16px;
     }
     .device-id {
-      font-family: monospace;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
-      color: #93c5fd;
+      font-family: monospace;
       letter-spacing: 0.5px;
     }
-    .device-actions {
+    .device-ops {
       display: flex;
       gap: 6px;
     }
-    .icon-btn {
+    .op-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
       cursor: pointer;
-      padding: 6px;
-      border-radius: 6px;
+      padding: 6px 8px;
+      border-radius: 8px;
       font-size: 13px;
-      transition: color .2s;
+      transition: all 0.2s;
     }
-    .icon-btn:hover {
-      color: white;
+    .op-btn:hover {
       background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
     }
-    .icon-btn.delete:hover {
+    .op-btn.delete:hover {
+      background: rgba(239, 68, 68, 0.2);
       color: var(--accent-red);
-      background: rgba(239, 68, 68, 0.15);
     }
 
     /* Notice Textarea */
-    textarea.notice-input {
+    .textarea-box {
       width: 100%;
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      height: 80px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 12px;
-      color: #fff;
+      padding: 10px 12px;
+      color: var(--text-main);
       font-size: 13px;
       outline: none;
       resize: vertical;
-      min-height: 70px;
+      margin-top: 8px;
+      line-height: 1.5;
     }
-    textarea.notice-input:focus {
+    .textarea-box:focus {
       border-color: var(--accent-blue);
+    }
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .preset-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .preset-pill:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
     }
 
     /* Save Button Sticky */
@@ -310,8 +348,8 @@
       background: linear-gradient(135deg, #2563eb, #7c3aed);
       color: white;
       border: none;
-      border-radius: 14px;
-      padding: 15px;
+      border-radius: 16px;
+      padding: 16px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
@@ -320,7 +358,10 @@
       justify-content: center;
       gap: 8px;
       box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
-      transition: transform .15s, box-shadow .15s;
+      transition: all 0.2s;
+      position: sticky;
+      bottom: 20px;
+      z-index: 10;
     }
     .save-btn:hover {
       transform: translateY(-1px);
@@ -330,31 +371,33 @@
       transform: translateY(1px);
     }
 
-    /* Modal / Toast */
+    /* Toast */
     .toast {
       position: fixed;
-      bottom: 24px;
+      top: 24px;
       left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid var(--accent-blue);
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(16, 185, 129, 0.95);
       color: white;
       padding: 12px 24px;
       border-radius: 30px;
       font-size: 14px;
       font-weight: 600;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 1000;
       display: flex;
       align-items: center;
       gap: 8px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      z-index: 999;
     }
     .toast.show {
       transform: translateX(-50%) translateY(0);
     }
+    .toast.error {
+      background: rgba(239, 68, 68, 0.95);
+    }
 
-    /* Password Modal */
+    /* Login Modal */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -363,149 +406,185 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 999;
+      z-index: 1000;
       padding: 20px;
     }
-    .modal-card {
-      background: #1e293b;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 20px;
-      padding: 28px 24px;
+      padding: 24px;
       width: 100%;
       max-width: 360px;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
     }
-    .modal-card h2 {
+    .modal h3 {
       font-size: 18px;
       margin-bottom: 8px;
     }
-    .modal-card p {
+    .modal p {
       font-size: 13px;
       color: var(--text-muted);
       margin-bottom: 20px;
+    }
+    .pin-input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: rgba(0, 0, 0, 0.4);
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+      outline: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- Password Authentication Modal -->
-  <div id="authModal" class="modal-overlay" style="display: none;">
-    <div class="modal-card">
-      <div style="font-size: 36px; margin-bottom: 12px; color: var(--accent-blue);">
-        <i class="fa-solid fa-lock"></i>
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check" id="toastIcon"></i>
+    <span id="toastMsg">操作成功</span>
+  </div>
+
+  <!-- PIN Protection Modal -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal">
+      <div style="width: 52px; height: 52px; background: rgba(59, 130, 246, 0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+        <i class="fa-solid fa-shield-halved" style="font-size: 24px; color: var(--accent-blue);"></i>
       </div>
-      <h2>管理员身份验证</h2>
-      <p>请输入后台控制密码进入控制台</p>
-      <input type="password" id="adminPin" class="text-input" placeholder="默认密码: plove888" style="text-align: center; font-size: 18px; margin-bottom: 16px;" autofocus>
+      <h3>管理员认证</h3>
+      <p>请输入管理员安全 PIN 码以访问管理面板</p>
+      <input type="password" id="pinInput" class="pin-input" placeholder="••••••••" maxlength="16" onkeydown="if(event.key==='Enter') verifyPin()">
       <button class="save-btn" onclick="verifyPin()" style="padding: 12px;">验证并进入</button>
       <div id="pinError" style="color: var(--accent-red); font-size: 12px; margin-top: 10px; display: none;">密码错误，请重试</div>
     </div>
   </div>
 
-  <div class="container" id="mainContainer" style="display: none;">
-    
+  <div class="container" id="mainContent" style="display: none;">
     <!-- Header -->
     <div class="header">
-      <h1><i class="fa-solid fa-shield-halved"></i> Plove 远程授权管理台</h1>
-      <p>即时管控用户设备授权、白名单与系统维护模式 (免改代码秒级生效)</p>
+      <div class="header-brand">
+        <div class="header-logo">
+          <i class="fa-solid fa-play"></i>
+        </div>
+        <div class="header-title">
+          <h1>Plove 远程授权控制台</h1>
+          <p>实时白名单 & 维护状态瞬时同步</p>
+        </div>
+      </div>
+      <button class="header-refresh" onclick="loadConfig(true)" title="刷新数据">
+        <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
+      </button>
     </div>
 
-    <!-- Live Status -->
+    <!-- Status Overview -->
     <div class="card">
       <div class="card-title">
-        <i class="fa-solid fa-signal" style="color: var(--accent-blue);"></i>
-        当前全网运行状态
-        <button class="icon-btn" onclick="loadConfig()" title="刷新最新数据" style="margin-left: auto;">
-          <i class="fa-solid fa-rotate" id="refreshIcon"></i>
-        </button>
+        <i class="fa-solid fa-chart-pie"></i>
+        运行概览
       </div>
-
-      <div class="status-banner">
+      <div class="status-grid">
         <div class="status-item">
-          <span class="status-label">系统维护模式</span>
-          <span class="status-value" id="statusMaintenance">
-            <span class="badge-dot" style="background: var(--accent-green);"></span> 正常运行
+          <div class="status-label">服务运行状态</div>
+          <span class="status-value" id="statusMaint">
+            <i class="fa-solid fa-spinner fa-spin"></i>
           </span>
         </div>
         <div class="status-item">
-          <span class="status-label">设备准入机制</span>
+          <div class="status-label">授权管控模式</div>
           <span class="status-value" id="statusWhitelistMode">
-            <span class="badge-dot" style="background: var(--accent-blue);"></span> 严格白名单
+            <i class="fa-solid fa-spinner fa-spin"></i>
           </span>
+        </div>
+        <div class="status-item">
+          <div class="status-label">授权设备数量</div>
+          <span class="status-value badge-blue" id="statusCount">-</span>
         </div>
       </div>
     </div>
 
-    <!-- Core Controls Switch -->
+    <!-- Maintenance Switch -->
     <div class="card">
-      <div class="card-title">
-        <i class="fa-solid fa-sliders" style="color: var(--accent-blue);"></i>
-        核心功能开关
-      </div>
-
-      <!-- Maintenance Toggle -->
       <div class="switch-row">
-        <div class="switch-info">
-          <div class="switch-title">系统维护锁屏</div>
-          <div class="switch-desc">开启后，所有进入 App 的用户均展示维护公告并锁定</div>
+        <div class="switch-desc">
+          <h4>全员系统维护模式</h4>
+          <p>开启后将对所有真机用户展示系统维护锁定页（除黑白名单测试外全部拦截）</p>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="toggleMaintenance" onchange="onMaintenanceChange()">
-          <span class="slider orange-slider"></span>
-        </label>
-      </div>
-
-      <!-- Whitelist Mode Toggle -->
-      <div class="switch-row">
-        <div class="switch-info">
-          <div class="switch-title">严格设备授权限制 (白名单)</div>
-          <div class="switch-desc">开启：仅已授权设备可用；关闭：允许所有设备随意使用</div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="toggleStrictWhitelist" onchange="onStrictWhitelistChange()">
+        <label class="toggle">
+          <input type="checkbox" id="toggleMaint" class="warn" onchange="onMaintChange()">
           <span class="slider"></span>
         </label>
+      </div>
+      <div style="margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px;">
+        <div class="switch-row">
+          <div class="switch-desc">
+            <h4>严格白名单授权模式</h4>
+            <p>开启：仅在下方列表中的设备可使用；关闭：所有设备免授权畅享（全员开放）</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="toggleStrictWhitelist" onchange="onStrictWhitelistChange()">
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
     </div>
 
     <!-- Whitelist Devices -->
-    <div class="card" id="deviceCard">
+    <div class="card">
       <div class="card-title">
-        <i class="fa-solid fa-mobile-screen-button" style="color: var(--accent-blue);"></i>
-        已授权设备列表 (<span id="deviceCount">0</span>)
+        <i class="fa-solid fa-mobile-screen-button"></i>
+        已授权设备列表
       </div>
-
+      
+      <!-- Input Add Device -->
       <div class="input-group">
-        <input type="text" id="newDeviceId" class="text-input" placeholder="输入设备授权码 (例如: PL-8A3F-9B21)" onkeypress="if(event.key==='Enter') addDevice()">
-        <button class="btn" onclick="addDevice()">
-          <i class="fa-solid fa-plus"></i> 授权此设备
+        <input type="text" class="text-input" id="newDeviceId" placeholder="输入设备码 (如 PL-9E4B-8A1C)" maxlength="32" style="text-transform: uppercase;">
+        <button class="btn-action" onclick="addDevice()">
+          <i class="fa-solid fa-plus"></i>
+          添加授权
         </button>
       </div>
 
+      <!-- Device List -->
       <div class="device-list" id="deviceList">
-        <!-- Dynamic devices here -->
+        <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px;">
+          <i class="fa-solid fa-spinner fa-spin"></i> 正在加载云端数据...
+        </div>
       </div>
     </div>
 
-    <!-- Notice Editor -->
+    <!-- Notice Config -->
     <div class="card">
       <div class="card-title">
-        <i class="fa-solid fa-bullhorn" style="color: var(--accent-orange);"></i>
-        维护与未授权锁定公告
+        <i class="fa-solid fa-bullhorn"></i>
+        未授权 / 维护公告设置
       </div>
-      <textarea id="noticeInput" class="notice-input" placeholder="输入展示在未授权或维护页面上的通知文案..."></textarea>
+      <p style="font-size: 12px; color: var(--text-muted);">当客户端被拦截（未授权或维护中）时，向用户展示的提示文案：</p>
+      <textarea class="textarea-box" id="noticeInput" placeholder="输入客户端展示的公告内容..."></textarea>
+      
+      <div class="presets">
+        <span class="preset-pill" onclick="setNotice('系统已开启设备授权限制，当前设备尚未开通授权。请复制下方设备码发送给管理员开通权限。')">未授权提示</span>
+        <span class="preset-pill" onclick="setNotice('系统正在升级维护中，预计将在稍后恢复，请耐心等待。')">维护升级提示</span>
+        <span class="preset-pill" onclick="setNotice('Plove iOS 内测版本已升级，请联系管理员获取专属设备授权。')">内测提示</span>
+      </div>
     </div>
 
-    <!-- Quick Device ID Checker -->
+    <!-- Fast Testing Tool -->
     <div class="card">
       <div class="card-title">
-        <i class="fa-solid fa-magnifying-glass" style="color: var(--accent-green);"></i>
-        设备码权限即时测验
+        <i class="fa-solid fa-vial"></i>
+        设备授权状态快速检测
       </div>
-      <div class="input-group" style="margin-bottom: 0;">
-        <input type="text" id="testDeviceId" class="text-input" placeholder="粘贴任意设备码测试准入状态...">
-        <button class="btn btn-secondary" onclick="testDevicePermission()">测验</button>
+      <div class="input-group">
+        <input type="text" class="text-input" id="testDeviceId" placeholder="输入任意设备码进行检测" style="text-transform: uppercase;">
+        <button class="btn-action" onclick="testDeviceAuth()" style="background: var(--accent-purple);">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          检测
+        </button>
       </div>
       <div id="testResult" style="margin-top: 10px; font-size: 13px; display: none;"></div>
     </div>
@@ -515,325 +594,301 @@
       <i class="fa-solid fa-cloud-arrow-up"></i>
       保存配置并全网即时生效
     </button>
-
-    <div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 10px 0;">
-      Plove Cloud Auth Engine • 托管于 GitHub & CDN
-    </div>
-  </div>
-
-  <!-- Toast -->
-  <div id="toast" class="toast">
-    <i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i>
-    <span id="toastMsg">操作成功</span>
   </div>
 
   <script>
-    // GitHub API 配置 (自动解密内置凭证)
-    const GITHUB_TOKEN = (function() {
-      try {
-        var p1 = "Z2hwX25udnE0c2N3VUxrdGxKbHU=";
-        var p2 = "SThqTGdLTU1XMmpkYzAyZUF4VXA=";
-        return atob(p1) + atob(p2);
-      } catch(e) { return ""; }
-    })();
-    const REPO_AUTH = "Ploveooo/plove-auth";
-    const REPO_PAGES = "Ploveooo/Ploveooo.github.io";
+    // GitHub 配置
+    const GITHUB_TOKEN = atob('Z2hwX25udnE0c2N3VUxrdGxKbHVJOGpMZ0tNTVcyamRjMDJlQXhVcCA=').trim();
+    const REPO_AUTH = 'Ploveooo/plove-auth';
+    const REPO_PAGES = 'Ploveooo/Ploveooo.github.io';
 
     let currentConfig = {
       maintenance: false,
-      notice: "系统已开启设备授权白名单限制，未授权设备请复制设备码发送给管理员开通权限。",
+      notice: '系统已开启设备授权限制，当前设备尚未开通授权。请复制下方设备码发送给管理员开通权限。',
       whitelist: [],
-      contact: "请复制您的设备授权码发送给管理员开通授权"
+      contact: '请复制您的设备授权码发送给管理员开通授权'
     };
+    let currentShaAuth = null;
+    let currentShaPages = null;
 
-    let authSha = null;
-
-    // 默认管理员密码
-    const DEFAULT_PIN = "plove888";
-
-    // 校验进入
-    function checkLogin() {
-      if (localStorage.getItem("plove_admin_authed") === "true") {
-        document.getElementById("authModal").style.display = "none";
-        document.getElementById("mainContainer").style.display = "flex";
-        loadConfig();
-      } else {
-        document.getElementById("authModal").style.display = "flex";
-      }
-    }
-
+    // PIN 认证 (默认 plove888)
     function verifyPin() {
-      const pin = document.getElementById("adminPin").value.trim();
-      if (pin === DEFAULT_PIN || pin === "plove" || pin === "123456") {
-        localStorage.setItem("plove_admin_authed", "true");
-        document.getElementById("authModal").style.display = "none";
-        document.getElementById("mainContainer").style.display = "flex";
+      const pin = document.getElementById('pinInput').value;
+      if (pin === 'plove888' || pin === 'admin888') {
+        localStorage.setItem('plove_admin_token', pin);
+        document.getElementById('pinModal').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'flex';
         loadConfig();
       } else {
-        document.getElementById("pinError").style.display = "block";
+        document.getElementById('pinError').style.display = 'block';
       }
     }
 
-    // 从 GitHub 加载最新配置
-    async function loadConfig() {
-      const refreshIcon = document.getElementById("refreshIcon");
-      refreshIcon.classList.add("fa-spin");
+    // 自动恢复登录
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPin = localStorage.getItem('plove_admin_token');
+      if (savedPin === 'plove888' || savedPin === 'admin888') {
+        document.getElementById('pinModal').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'flex';
+        loadConfig();
+      }
+    });
+
+    // Toast 提示
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+      
+      toastMsg.innerText = msg;
+      toast.className = 'toast ' + (isError ? 'error' : '') + ' show';
+      toastIcon.className = isError ? 'fa-solid fa-circle-exclamation' : 'fa-solid fa-circle-check';
+
+      setTimeout(() => {
+        toast.className = 'toast';
+      }, 2500);
+    }
+
+    // 加载配置
+    async function loadConfig(isManualRefresh = false) {
+      const refreshIcon = document.getElementById('refreshIcon');
+      if (refreshIcon) refreshIcon.classList.add('fa-spin');
 
       try {
-        const url = `https://api.github.com/repos/${REPO_AUTH}/contents/auth.json?_t=${Date.now()}`;
+        const url = `https://api.github.com/repos/${REPO_PAGES}/contents/auth.json?_t=${Date.now()}`;
         const res = await fetch(url, {
           headers: {
-            "Authorization": `token ${GITHUB_TOKEN}`,
-            "Accept": "application/vnd.github.v3+json"
+            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json'
           }
         });
+        if (!res.ok) throw new Error('网络请求异常: ' + res.status);
+        const data = await res.json();
+        currentShaPages = data.sha;
+        
+        // base64 decode with UTF-8
+        const decodedStr = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+        currentConfig = JSON.parse(decodedStr);
 
-        if (res.ok) {
-          const data = await res.json();
-          authSha = data.sha;
-          // Decode Base64 UTF-8
-          const decoded = decodeURIComponent(escape(atob(data.content)));
-          currentConfig = JSON.parse(decoded);
-          renderUI();
-          showToast("最新配置加载成功");
-        } else {
-          showToast("加载云端配置失败，请检查网络");
-        }
+        renderUI();
+        if (isManualRefresh) showToast('已从云端拉取最新配置');
       } catch (e) {
-        console.error("Load failed:", e);
-        showToast("加载出错: " + e.message);
+        console.error(e);
+        showToast('加载失败: ' + e.message, true);
       } finally {
-        refreshIcon.classList.remove("fa-spin");
+        if (refreshIcon) refreshIcon.classList.remove('fa-spin');
       }
     }
 
-    // 渲染页面
+    // 渲染 UI
     function renderUI() {
-      // 维护模式
-      const isMaint = !!currentConfig.maintenance;
-      document.getElementById("toggleMaintenance").checked = isMaint;
-      document.getElementById("statusMaintenance").innerHTML = isMaint 
-        ? `<span class="badge-dot" style="background: var(--accent-orange);"></span> 维护升级中`
-        : `<span class="badge-dot" style="background: var(--accent-green);"></span> 正常运行中`;
+      // 1. 维护状态
+      document.getElementById('toggleMaint').checked = currentConfig.maintenance;
+      document.getElementById('statusMaint').innerHTML = currentConfig.maintenance ?
+        '<span class="badge-red"><i class="fa-solid fa-triangle-exclamation"></i> 维护中</span>' :
+        '<span class="badge-green"><i class="fa-solid fa-circle-check"></i> 正常运行</span>';
 
-      // 白名单模式
-      const hasWildcard = currentConfig.whitelist && currentConfig.whitelist.includes("*");
+      // 2. 严格白名单模式
+      const hasWildcard = currentConfig.whitelist && currentConfig.whitelist.includes('*');
       const isStrict = !hasWildcard;
-      document.getElementById("toggleStrictWhitelist").checked = isStrict;
-      document.getElementById("statusWhitelistMode").innerHTML = isStrict
-        ? `<span class="badge-dot" style="background: var(--accent-blue);"></span> 严格白名单`
-        : `<span class="badge-dot" style="background: var(--accent-green);"></span> 全员开放`;
+      document.getElementById('toggleStrictWhitelist').checked = isStrict;
+      document.getElementById('statusWhitelistMode').innerHTML = isStrict ?
+        '<span class="badge-amber"><i class="fa-solid fa-lock"></i> 严格白名单</span>' :
+        '<span class="badge-green"><i class="fa-solid fa-lock-open"></i> 全员开放</span>';
 
-      // 公告文本
-      document.getElementById("noticeInput").value = currentConfig.notice || "";
+      // 3. 授权设备数
+      const realDevices = (currentConfig.whitelist || []).filter(id => id !== '*');
+      document.getElementById('statusCount').innerText = `${realDevices.length} 台`;
 
-      // 设备列表
-      renderDeviceList();
-    }
-
-    function renderDeviceList() {
-      const listEl = document.getElementById("deviceList");
-      listEl.innerHTML = "";
-
-      // 过滤掉 "*" 只展示真实设备ID
-      const realDevices = (currentConfig.whitelist || []).filter(id => id !== "*");
-      document.getElementById("deviceCount").textContent = realDevices.length;
-
+      // 4. 渲染设备列表
+      const listEl = document.getElementById('deviceList');
       if (realDevices.length === 0) {
-        listEl.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 13px;">暂无单独授权设备${!document.getElementById("toggleStrictWhitelist").checked ? "（当前为全员开放模式）" : "（未授权设备将全部被拦截）"}</div>`;
-        return;
+        listEl.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 13px;">暂无单独授权设备${!isStrict ? '（当前为全员开放模式）' : '（未授权设备将全部被拦截）'}</div>`;
+      } else {
+        listEl.innerHTML = realDevices.map(id => `
+          <div class="device-item">
+            <div class="device-info">
+              <i class="fa-solid fa-mobile-screen-button device-icon"></i>
+              <span class="device-id">${id}</span>
+            </div>
+            <div class="device-ops">
+              <button class="op-btn" onclick="copyText('${id}')" title="复制设备码">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+              <button class="op-btn delete" onclick="removeDevice('${id}')" title="撤销授权">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
       }
 
-      realDevices.forEach((id) => {
-        const item = document.createElement("div");
-        item.className = "device-item";
-        item.innerHTML = `
-          <span class="device-id"><i class="fa-solid fa-mobile" style="margin-right:6px; color:#60a5fa;"></i>${id}</span>
-          <div class="device-actions">
-            <button class="icon-btn" onclick="copyId('${id}')" title="复制设备码"><i class="fa-regular fa-copy"></i></button>
-            <button class="icon-btn delete" onclick="removeDevice('${id}')" title="删除授权"><i class="fa-regular fa-trash-can"></i></button>
-          </div>
-        `;
-        listEl.appendChild(item);
-      });
+      // 5. 公告内容
+      document.getElementById('noticeInput').value = currentConfig.notice || '';
     }
 
-    // 开关维护模式
-    function onMaintenanceChange() {
-      currentConfig.maintenance = document.getElementById("toggleMaintenance").checked;
+    function onMaintChange() {
+      currentConfig.maintenance = document.getElementById('toggleMaint').checked;
       renderUI();
     }
 
-    // 开关严格白名单模式
     function onStrictWhitelistChange() {
-      const isStrict = document.getElementById("toggleStrictWhitelist").checked;
+      const isStrict = document.getElementById('toggleStrictWhitelist').checked;
       if (isStrict) {
-        // 移除通配符 "*"
-        currentConfig.whitelist = (currentConfig.whitelist || []).filter(id => id !== "*");
+        currentConfig.whitelist = (currentConfig.whitelist || []).filter(id => id !== '*');
       } else {
-        // 添加通配符 "*"
         if (!currentConfig.whitelist) currentConfig.whitelist = [];
-        if (!currentConfig.whitelist.includes("*")) {
-          currentConfig.whitelist.unshift("*");
+        if (!currentConfig.whitelist.includes('*')) {
+          currentConfig.whitelist.unshift('*');
         }
       }
       renderUI();
     }
 
-    // 添加设备
     function addDevice() {
-      const input = document.getElementById("newDeviceId");
+      const input = document.getElementById('newDeviceId');
       let id = input.value.trim().toUpperCase();
-      if (!id) return;
-
-      if (!currentConfig.whitelist) currentConfig.whitelist = [];
-
-      if (currentConfig.whitelist.includes(id)) {
-        showToast("该设备已在白名单中");
+      if (!id) {
+        showToast('请输入设备码', true);
         return;
       }
-
+      if (!currentConfig.whitelist) currentConfig.whitelist = [];
+      if (currentConfig.whitelist.includes(id)) {
+        showToast('该设备码已在授权列表中', true);
+        return;
+      }
       currentConfig.whitelist.push(id);
-      input.value = "";
+      input.value = '';
       renderUI();
-      showToast(`已添加授权设备: ${id}`);
+      showToast(`已添加授权: ${id}`);
     }
 
-    // 删除设备
     function removeDevice(id) {
-      if (confirm(`确认撤销设备 ${id} 的授权？`)) {
+      if (confirm(`确定要移除设备 [${id}] 的授权吗？`)) {
         currentConfig.whitelist = currentConfig.whitelist.filter(item => item !== id);
         renderUI();
-        showToast(`已撤销设备 ${id}`);
+        showToast(`已移除设备授权: ${id}`);
       }
     }
 
-    // 复制ID
-    function copyId(id) {
-      navigator.clipboard.writeText(id).then(() => {
-        showToast(`已复制: ${id}`);
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('已复制设备码: ' + text);
       });
     }
 
-    // 测试设备状态
-    function testDevicePermission() {
-      const testId = document.getElementById("testDeviceId").value.trim().toUpperCase();
-      const resEl = document.getElementById("testResult");
+    function setNotice(text) {
+      document.getElementById('noticeInput').value = text;
+      currentConfig.notice = text;
+      showToast('已载入公告模版');
+    }
+
+    function testDeviceAuth() {
+      const testId = document.getElementById('testDeviceId').value.trim().toUpperCase();
+      const resultEl = document.getElementById('testResult');
       if (!testId) {
-        resEl.style.display = "none";
+        resultEl.style.display = 'none';
         return;
       }
+      resultEl.style.display = 'block';
 
-      resEl.style.display = "block";
       if (currentConfig.maintenance) {
-        resEl.innerHTML = `<span style="color: var(--accent-orange); font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> 拦截：系统当前处于维护模式，所有用户均无法使用。</span>`;
+        resultEl.innerHTML = `<span style="color: var(--accent-red);"><i class="fa-solid fa-circle-xmark"></i> 拦截：系统当前处于全员维护模式</span>`;
         return;
       }
 
-      const hasWildcard = currentConfig.whitelist && currentConfig.whitelist.includes("*");
+      const hasWildcard = currentConfig.whitelist && currentConfig.whitelist.includes('*');
       const isAllowed = hasWildcard || (currentConfig.whitelist && currentConfig.whitelist.includes(testId));
 
       if (isAllowed) {
-        resEl.innerHTML = `<span style="color: var(--accent-green); font-weight: bold;"><i class="fa-solid fa-circle-check"></i> 准入通过：设备 ${testId} 已获得授权，进入App可直接使用！</span>`;
+        resultEl.innerHTML = `<span style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> 放行：设备 [${testId}] 拥有使用权限${hasWildcard ? '（全员模式）' : ''}</span>`;
       } else {
-        resEl.innerHTML = `<span style="color: var(--accent-red); font-weight: bold;"><i class="fa-solid fa-circle-xmark"></i> 拦截锁定：设备 ${testId} 未在白名单中，进入App将显示“设备未授权”锁屏！</span>`;
+        resultEl.innerHTML = `<span style="color: var(--accent-red);"><i class="fa-solid fa-circle-xmark"></i> 拦截：设备 [${testId}] 未授权，将显示锁屏</span>`;
       }
     }
 
-    // 保存配置到 GitHub 仓库
+    // 保存配置
     async function saveConfig() {
-      const saveBtn = document.getElementById("saveBtn");
+      const saveBtn = document.getElementById('saveBtn');
       saveBtn.disabled = true;
       saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在同步全网...`;
 
-      // 提取最新公告
-      currentConfig.notice = document.getElementById("noticeInput").value.trim();
-
-      const contentStr = JSON.stringify(currentConfig, null, 2);
-      // UTF-8 Base64
-      const contentB64 = btoa(unescape(encodeURIComponent(contentStr)));
+      currentConfig.notice = document.getElementById('noticeInput').value.trim();
 
       try {
-        // 1. 同步到 plove-auth 仓库
-        const payload = {
-          message: "update auth config from Web Console",
-          content: contentB64,
-          branch: "main"
-        };
-        if (authSha) {
-          payload.sha = authSha;
+        const jsonStr = JSON.stringify(currentConfig, null, 2);
+        const contentB64 = btoa(unescape(encodeURIComponent(jsonStr)));
+
+        // 1. 同步保存到 Ploveooo.github.io
+        let shaPages = currentShaPages;
+        if (!shaPages) {
+          const res = await fetch(`https://api.github.com/repos/${REPO_PAGES}/contents/auth.json`, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+          });
+          if (res.ok) {
+            const d = await res.json();
+            shaPages = d.sha;
+          }
         }
 
-        const putRes = await fetch(`https://api.github.com/repos/${REPO_AUTH}/contents/auth.json`, {
-          method: "PUT",
+        const putPages = await fetch(`https://api.github.com/repos/${REPO_PAGES}/contents/auth.json`, {
+          method: 'PUT',
           headers: {
-            "Authorization": `token ${GITHUB_TOKEN}`,
-            "Content-Type": "application/json",
-            "Accept": "application/vnd.github.v3+json"
+            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            message: 'update auth config from Web Console',
+            content: contentB64,
+            sha: shaPages,
+            branch: 'main'
+          })
         });
 
-        if (!putRes.ok) {
-          const err = await putRes.json();
-          throw new Error(err.message || "Failed to save to auth repo");
+        if (!putPages.ok) {
+          const err = await putPages.json();
+          throw new Error(err.message || '保存到 GitHub Pages 失败');
         }
+        const putPagesData = await putPages.json();
+        currentShaPages = putPagesData.content.sha;
 
-        const putData = await putRes.json();
-        authSha = putData.content.sha;
-
-        // 2. 同步到 Ploveooo.github.io 静态站点根目录
+        // 2. 尝试同步保存到 plove-auth
         try {
-          // check sha of Ploveooo.github.io/auth.json
-          let pagesSha = null;
-          const checkRes = await fetch(`https://api.github.com/repos/${REPO_PAGES}/contents/auth.json`, {
-            headers: { "Authorization": `token ${GITHUB_TOKEN}` }
+          const resAuth = await fetch(`https://api.github.com/repos/${REPO_AUTH}/contents/auth.json`, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
           });
-          if (checkRes.ok) {
-            const cd = await checkRes.json();
-            pagesSha = cd.sha;
+          let shaAuth = null;
+          if (resAuth.ok) {
+            const d = await resAuth.json();
+            shaAuth = d.sha;
           }
-          const pagesPayload = {
-            message: "sync auth.json to pages",
-            content: contentB64,
-            branch: "main"
-          };
-          if (pagesSha) pagesPayload.sha = pagesSha;
-          await fetch(`https://api.github.com/repos/${REPO_PAGES}/contents/auth.json`, {
-            method: "PUT",
+          await fetch(`https://api.github.com/repos/${REPO_AUTH}/contents/auth.json`, {
+            method: 'PUT',
             headers: {
-              "Authorization": `token ${GITHUB_TOKEN}`,
-              "Content-Type": "application/json"
+              'Authorization': `token ${GITHUB_TOKEN}`,
+              'Content-Type': 'application/json'
             },
-            body: JSON.stringify(pagesPayload)
+            body: JSON.stringify({
+              message: 'update auth config from Web Console',
+              content: contentB64,
+              sha: shaAuth,
+              branch: 'main'
+            })
           });
-        } catch(e) {
-          console.log("Sync to pages ignored:", e);
+        } catch (e2) {
+          console.warn('plove-auth 同步跳过:', e2);
         }
 
-        showToast("🎉 配置已成功保存！全网立即生效！");
+        showToast('🎉 配置已保存并全网即时生效！');
         renderUI();
       } catch (e) {
-        console.error("Save error:", e);
-        alert("保存失败: " + e.message);
+        console.error('Save error:', e);
+        showToast('保存失败: ' + e.message, true);
       } finally {
         saveBtn.disabled = false;
         saveBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> 保存配置并全网即时生效`;
       }
     }
-
-    // 提示 Toast
-    function showToast(msg) {
-      const t = document.getElementById("toast");
-      document.getElementById("toastMsg").textContent = msg;
-      t.classList.add("show");
-      setTimeout(() => {
-        t.classList.remove("show");
-      }, 2500);
-    }
-
-    // 启动
-    checkLogin();
   </script>
 </body>
 </html>
