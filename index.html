@@ -507,26 +507,26 @@
       </div>
     </div>
 
-    <!-- Maintenance Switch -->
+    <!-- Master Authorization Switch -->
     <div class="card">
       <div class="switch-row">
         <div class="switch-desc">
-          <h4>全员系统维护模式</h4>
-          <p>开启后将对所有真机用户展示系统维护锁定页（除黑白名单测试外全部拦截）</p>
+          <h4>🛡️ 严格设备授权管控模式</h4>
+          <p>开启（推荐）：仅下方白名单中的设备可访问 App；关闭：全员开放免授权直接观看</p>
         </div>
         <label class="toggle">
-          <input type="checkbox" id="toggleMaint" class="warn" onchange="onMaintChange()">
+          <input type="checkbox" id="toggleStrictWhitelist" onchange="onStrictWhitelistChange()">
           <span class="slider"></span>
         </label>
       </div>
       <div style="margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px;">
         <div class="switch-row">
           <div class="switch-desc">
-            <h4>严格白名单授权模式</h4>
-            <p>开启：仅在下方列表中的设备可使用；关闭：所有设备免授权畅享（全员开放）</p>
+            <h4 style="color: var(--accent-amber);">⚠️ 紧急系统全员维护（平时请关闭）</h4>
+            <p style="color: var(--text-muted);">开启后系统提示维护升级中（已单独授权的白名单设备仍可特权通行）</p>
           </div>
           <label class="toggle">
-            <input type="checkbox" id="toggleStrictWhitelist" onchange="onStrictWhitelistChange()">
+            <input type="checkbox" id="toggleMaint" class="warn" onchange="onMaintChange()">
             <span class="slider"></span>
           </label>
         </div>
@@ -878,6 +878,12 @@
         } catch (e2) {
           console.warn('plove-auth 同步跳过:', e2);
         }
+
+        // 3. 立即清理 jsDelivr 全球边缘缓存 (确保国内与全球秒级刷新)
+        try {
+          fetch(`https://purge.jsdelivr.net/gh/Ploveooo/Ploveooo.github.io@main/auth.json?_t=${Date.now()}`).catch(()=>{});
+          fetch(`https://purge.jsdelivr.net/gh/Ploveooo/plove-auth@main/auth.json?_t=${Date.now()}`).catch(()=>{});
+        } catch (e3) {}
 
         showToast('🎉 配置已保存并全网即时生效！');
         renderUI();
