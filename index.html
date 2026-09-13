@@ -512,6 +512,7 @@
       <div class="switch-row">
         <div class="switch-desc">
           <h4>🛡️ 严格设备授权管控模式</h4>
+          <div id="strictLiveDesc" style="font-size: 13px; margin: 4px 0 6px 0; font-weight: bold;"></div>
           <p>开启（推荐）：仅下方白名单中的设备可访问 App；关闭：全员开放免授权直接观看</p>
         </div>
         <label class="toggle">
@@ -523,6 +524,7 @@
         <div class="switch-row">
           <div class="switch-desc">
             <h4 style="color: var(--accent-amber);">⚠️ 紧急系统全员维护（平时请关闭）</h4>
+            <div id="maintLiveDesc" style="font-size: 13px; margin: 4px 0 6px 0; font-weight: bold;"></div>
             <p style="color: var(--text-muted);">开启后系统进入全员维护，任何设备（包括白名单）一律不可登录</p>
           </div>
           <label class="toggle">
@@ -688,6 +690,13 @@
         '<span class="badge-red"><i class="fa-solid fa-triangle-exclamation"></i> 维护中</span>' :
         '<span class="badge-green"><i class="fa-solid fa-circle-check"></i> 正常运行</span>';
 
+      const maintLiveEl = document.getElementById('maintLiveDesc');
+      if (maintLiveEl) {
+        maintLiveEl.innerHTML = currentConfig.maintenance ?
+          '<span style="color: var(--accent-red);"><i class="fa-solid fa-triangle-exclamation"></i> 【当前状态：全员维护已开启，任何设备不可登录】</span>' :
+          '<span style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> 【当前状态：全员维护已关闭，系统正常开放运行】</span>';
+      }
+
       // 2. 严格白名单模式
       const hasWildcard = currentConfig.whitelist && currentConfig.whitelist.includes('*');
       const isStrict = !hasWildcard;
@@ -695,6 +704,13 @@
       document.getElementById('statusWhitelistMode').innerHTML = isStrict ?
         '<span class="badge-amber"><i class="fa-solid fa-lock"></i> 严格白名单</span>' :
         '<span class="badge-green"><i class="fa-solid fa-lock-open"></i> 全员开放</span>';
+
+      const strictLiveEl = document.getElementById('strictLiveDesc');
+      if (strictLiveEl) {
+        strictLiveEl.innerHTML = isStrict ?
+          '<span style="color: var(--accent-amber);"><i class="fa-solid fa-lock"></i> 【当前模式：严格白名单访问（仅下方列表中的设备可进入）】</span>' :
+          '<span style="color: var(--accent-green);"><i class="fa-solid fa-lock-open"></i> 【当前模式：全员访问（所有真机免授权直接观看）】</span>';
+      }
 
       // 3. 授权设备数
       const realDevices = (currentConfig.whitelist || []).filter(id => id !== '*');
