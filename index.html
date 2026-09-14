@@ -849,6 +849,21 @@
 
       currentConfig.notice = document.getElementById('noticeInput').value.trim();
 
+      // ★ 核心防伪签名强化：保存时自动基于盐值计算 SHA-256 签名，击碎本地抓包与 Mock 重写
+      try {
+        const SALT = "PL_AUTH_SALT_9f8c2b7e1a0d4e3f";
+        const sortedWl = (currentConfig.whitelist || []).map(x => x.trim().toUpperCase()).filter(Boolean).sort();
+        const maintStr = String(Boolean(currentConfig.maintenance)).toLowerCase();
+        const signSource = sortedWl.join(',') + ':' + maintStr + ':' + SALT;
+        const msgBuffer = new TextEncoder().encode(signSource);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const signHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        currentConfig.sign = signHex;
+      } catch(eSign) {
+        console.warn('签名生成提示:', eSign);
+      }
+
       try {
         const jsonStr = JSON.stringify(currentConfig, null, 2);
         const contentB64 = btoa(unescape(encodeURIComponent(jsonStr)));
